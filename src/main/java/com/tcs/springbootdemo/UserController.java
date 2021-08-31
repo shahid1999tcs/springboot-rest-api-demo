@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import javax.validation.Valid;
 
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
@@ -19,6 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class UserController {
+	
+	private static final Logger logger = org.slf4j.LoggerFactory.getLogger(UserController.class);
 
 	@Autowired
 	IUserService userservice;
@@ -28,12 +31,13 @@ public class UserController {
 
 	@GetMapping("/user")
 	public Iterable<User> getuser() {
+		logger.error("Wow?");
 		System.out.println("Hello");
 		return userservice.getAllUsers();
 	}
 
 	@PostMapping("/user")
-	@Transactional
+	@Transactional(rollbackFor = Exception.class)
 	public void saveuser(@RequestBody @Valid User user) {
 		// userservice.save(user);
 		repo.save(user);
@@ -48,12 +52,12 @@ public class UserController {
 	}
 
 	@GetMapping("/user/{id}")
-	private Optional<User> getUser(@PathVariable("id") Integer id) {
+	private User getUser1(@PathVariable("id") Integer id) {
 		Optional<User> user = repo.findById(id);
-		if (!user.isPresent()) {
-			throw new UserNotFoundException("user does not exist");
-		}
-		return user;
+//		if (!user.isPresent()) {
+//			throw new UserNotFoundException("user does not exist");
+//		}
+		return user.get();
 	}
 	
 	@DeleteMapping("/user/{id}")
