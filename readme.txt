@@ -1,1 +1,1 @@
-Testing CI
+Testing CI and automation
